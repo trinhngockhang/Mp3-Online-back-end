@@ -12,6 +12,8 @@ const router = Router();
 // --- Login ---
 router.post('/login', loginValidator, throwAsNext(controller.login));
 
+// --- Sign up ---
+router.post('/signUp', throwAsNext(controller.signUp));
 // registerSubrouter
 
 // export
