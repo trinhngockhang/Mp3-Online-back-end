@@ -12,6 +12,8 @@ router.get('/top', throwAsNext(controller.getListTopSong));
 router.get('/new', throwAsNext(controller.getListNewSong));
 // slide
 router.get('/slide', throwAsNext(controller.getSlideSong));
+// get song by album
+router.get('/album/:id', throwAsNext(controller.getSongByAlbum));
 // get song
 router.get('/:id', throwAsNext(controller.getMp3));
 // registerSubrouter

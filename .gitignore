@@ -6,3 +6,5 @@ dist_dev
 logs
 MP3
 Temp
+.env
+.env.prod

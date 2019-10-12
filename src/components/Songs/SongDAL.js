@@ -11,19 +11,38 @@ export const getListNewSong = async () => {
   const sql = `SELECT songs.id,image,songs.name as nameSong,singers.name as singer FROM songs,singers,singer_song
   WHERE singers.id = singer_song.singerId
   AND singer_song.songId = songs.id
-  ORDER BY createdAt LIMIT 8`;
+  ORDER BY createdAt DESC LIMIT 10`;
   const result = await dbUtil.query(sql);
-  return result;
+  const songs = dbUtil.group(result.map(row => ({
+    ...dbUtil.nested(row),
+  })), 'id', 'singer');
+  return songs;
 };
 
 export const getSlideSong = async () => {
-  const sql = `SELECT songs.id,coverImg,songs.name as nameSong,singers.name FROM songs,singers,singer_song
+  const sql = `SELECT songs.id,coverImg,image,songs.name as nameSong,singers.name as singer FROM songs,singers,singer_song
    WHERE coverImg IS NOT NULL
    AND singers.id = singer_song.singerId
    AND singer_song.songId = songs.id
    ORDER BY createdAt LIMIT 3`;
   const result = await dbUtil.query(sql);
-  return result;
+  const songs = dbUtil.group(result.map(row => ({
+    ...dbUtil.nested(row),
+  })), 'id', 'singer');
+  return songs;
+};
+
+export const getSongByAlbum = async (id) => {
+  const sql = `SELECT songs.id,image,songs.name as nameSong,singers.name as singer FROM songs,singers,singer_song
+  WHERE singers.id = singer_song.singerId
+  AND singer_song.songId = songs.id
+  AND albumId = ?
+  ORDER BY createdAt DESC`;
+  const result = await dbUtil.query(sql, [id]);
+  const songs = dbUtil.group(result.map(row => ({
+    ...dbUtil.nested(row),
+  })), 'id', 'singer');
+  return songs;
 };
 
 export const getMp3 = async (id) => {

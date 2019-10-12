@@ -15,6 +15,11 @@ export const getSlideSong = async (req, res) => {
   res.send(songs);
 };
 
+export const getSongByAlbum = async (req, res) => {
+  const songs = await dbController.getSongByAlbum(req.params.id);
+  res.send(songs);
+};
+
 export const getMp3 = async (req, res) => {
   const { id } = req.params;
   console.log(id);
