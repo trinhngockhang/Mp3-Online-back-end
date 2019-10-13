@@ -8,6 +8,8 @@ const router = Router();
 // route
 // top artist
 router.get('/suggest', throwAsNext(controller.getSuggestArtist));
+// get artist detail
+router.get('/detail/:id', throwAsNext(controller.getArtistDetail));
 // registerSubrouter
 
 // export

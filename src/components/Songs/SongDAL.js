@@ -8,11 +8,13 @@ export const getListTopSong = async () => {
 };
 
 export const getListNewSong = async () => {
+  const offset = Math.round(Math.random() * (16 - 10)) + 10;
   const sql = `SELECT songs.id,image,songs.name as nameSong,singers.name as singer FROM songs,singers,singer_song
   WHERE singers.id = singer_song.singerId
   AND singer_song.songId = songs.id
-  ORDER BY createdAt DESC LIMIT 10`;
-  const result = await dbUtil.query(sql);
+  ORDER BY createdAt DESC LIMIT 9
+  OFFSET ?`;
+  const result = await dbUtil.query(sql, [offset]);
   const songs = dbUtil.group(result.map(row => ({
     ...dbUtil.nested(row),
   })), 'id', 'singer');
@@ -50,4 +52,21 @@ export const getMp3 = async (id) => {
   const result = await dbUtil.queryOne(sql, [id]);
   console.log('url from db', result.url);
   return result.url;
+};
+
+export const getSongByArtist = async (id) => {
+  const sql = `SELECT songs.id,image,songs.name as nameSong,
+  singers.name as singer, singers.id as singerId FROM songs,singers,singer_song
+  WHERE singers.id = singer_song.singerId
+  AND singer_song.songId = songs.id
+  AND songs.id = ANY (
+    SELECT songId FROM singer_song
+    WHERE singerId = ?
+  )
+  ORDER BY createdAt DESC`;
+  const result = await dbUtil.query(sql, [id]);
+  const songs = dbUtil.group(result.map(row => ({
+    ...dbUtil.nested(row),
+  })), 'id', 'singer', 'singerId');
+  return songs;
 };

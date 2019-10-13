@@ -130,18 +130,36 @@ export const nested = (obj) => {
   return keys.reduce((result, path) => _.set(result, path, obj[path]), {});
 };
 
-export const group = (array, primaryKey, key) => {
+export const group = (array, primaryKey, key, other = null) => {
   const result = [];
   const primaryKeys = [];
   for (const item of array) {
     const item1 = item[key];
     const indexOf = primaryKeys.indexOf(item[primaryKey]);
     if (indexOf !== -1) {
-      result[indexOf][key].push(item1);
+      if (other) {
+        const otherItem1 = item[other];
+        const newObj = {};
+        newObj[key] = item1;
+        newObj[other] = otherItem1;
+        result[indexOf][key].push(newObj);
+      } else {
+        result[indexOf][key].push(item1);
+      }
     } else {
       const newItem = {};
-      newItem[key] = [item1];
       primaryKeys.push(item[primaryKey]);
+      if (other) {
+        const otherItem1 = item[other];
+        const newObj = {};
+        newObj[key] = item1;
+        newObj[other] = otherItem1;
+        newItem[key] = [];
+        newItem[key].push(newObj);
+        delete item[other];
+      } else {
+        newItem[key] = [item1];
+      }
       result.push(Object.assign(item, newItem));
     }
   }
