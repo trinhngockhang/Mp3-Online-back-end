@@ -12,7 +12,7 @@ export const getListNewSong = async () => {
   const sql = `SELECT songs.id,image,songs.name as nameSong,singers.name as singer FROM songs,singers,singer_song
   WHERE singers.id = singer_song.singerId
   AND singer_song.songId = songs.id
-  ORDER BY createdAt DESC LIMIT 9
+  ORDER BY createdAt DESC LIMIT 15
   OFFSET ?`;
   const result = await dbUtil.query(sql, [offset]);
   const songs = dbUtil.group(result.map(row => ({
@@ -68,5 +68,26 @@ export const getSongByArtist = async (id) => {
   const songs = dbUtil.group(result.map(row => ({
     ...dbUtil.nested(row),
   })), 'id', 'singer', 'singerId');
+  return songs;
+};
+
+export const getSongByCategory = async (id, { limit, offset }) => {
+  console.log({ limit, offset });
+  const sql = `SELECT S.id,C.name as categoryName,
+  S.image,S.name as nameSong,
+  singers.name as singer 
+  FROM songs S,singers,singer_song,categories C,song_categories SC
+  WHERE singers.id = singer_song.singerId
+  AND singer_song.songId = S.id
+  AND C.id = SC.categoryId
+  AND SC.songId = S.id
+  AND C.id = ?
+  ORDER BY createdAt DESC
+  LIMIT ?
+  OFFSET ?`;
+  const result = await dbUtil.query(sql, [id, limit, offset]);
+  const songs = dbUtil.group(result.map(row => ({
+    ...dbUtil.nested(row),
+  })), 'id', 'singer');
   return songs;
 };

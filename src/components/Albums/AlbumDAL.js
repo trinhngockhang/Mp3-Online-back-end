@@ -7,7 +7,7 @@ export const getNewAlbum = async () => {
    WHERE album.id = sa.albumId
    AND sa.singerId = singers.id
    ORDER BY album.createdAt DESC
-   LIMIT 8
+   LIMIT 10
    `;
   const result = await dbUtil.query(sql);
   const albums = dbUtil.group(result.map(row => ({
