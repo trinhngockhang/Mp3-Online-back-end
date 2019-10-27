@@ -4,7 +4,7 @@ import routers from './components/router';
 // Middleware
 import bodyParser from 'body-parser';
 import morgan from 'morgan';
-import { authMiddleware, errorHandler, ok, corsMiddleware } from './middleware';
+import { errorHandler, ok, corsMiddleware } from './middleware';
 
 // Log
 import { logger } from './util/logUtil';
@@ -25,7 +25,7 @@ expressApp.use(bodyParser.urlencoded({
   extended: true,
   limit: '50mb',
 }));
-expressApp.use(authMiddleware);
+// expressApp.use(authMiddleware);
 expressApp.use(ok);
 
 // routers
