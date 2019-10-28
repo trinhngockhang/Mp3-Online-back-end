@@ -16,3 +16,20 @@ export const searchSong = async (keyword) => {
   })), 'id', 'singer');
   return songs;
 };
+
+export const searchAlbum = async (keyword) => {
+  // const offset = Math.round(Math.random() * (16 - 10)) + 10;
+  const sql = `SELECT album.name as albumName,album.id,img,singers.name as singer
+   FROM album,singer_album sa,singers
+   WHERE album.id = sa.albumId
+   AND sa.singerId = singers.id
+   AND album.name LIKE '%${keyword}%'
+   ORDER BY album.createdAt DESC
+   LIMIT 10
+   `;
+  const result = await dbUtil.query(sql);
+  const albums = dbUtil.group(result.map(row => ({
+    ...dbUtil.nested(row),
+  })), 'id', 'singer');
+  return albums;
+};

@@ -11,6 +11,11 @@ router.get('/song', paginationMiddleware({
   maxSize: 30,
   defaultSize: 20,
 }), throwAsNext(controller.searchSong));
+// search album
+router.get('/album', paginationMiddleware({
+  maxSize: 30,
+  defaultSize: 20,
+}), throwAsNext(controller.searchAlbum));
 // registerSubrouter
 
 // export
