@@ -8,6 +8,10 @@ const router = Router();
 // route
 // get me
 router.get('/me', authMiddleware, requireLogin, throwAsNext(controller.getMe));
+// like song
+router.post('/like', authMiddleware, requireLogin, throwAsNext(controller.likeSong));
+// unlike song
+router.post('/unlike', authMiddleware, requireLogin, throwAsNext(controller.unlikeSong));
 // registerSubrouter
 
 // export

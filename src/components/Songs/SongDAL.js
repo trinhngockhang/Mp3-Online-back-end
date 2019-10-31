@@ -91,3 +91,45 @@ export const getSongByCategory = async (id, { limit, offset }) => {
   })), 'id', 'singer');
   return songs;
 };
+
+export const getSongDetail = async (id, userId = null) => {
+  const sql = `SELECT S.id, singers.id as singerId,S.writer,liked as likeNumber,
+    S.image,S.name as nameSong,
+    singers.name as singer 
+    FROM songs S,singers,singer_song
+    WHERE S.id = ?
+    AND singers.id = singer_song.singerId
+    AND singer_song.songId = S.id
+  `;
+  const getCateSql = `
+    SELECT C.id,C.name
+    FROM categories C, song_categories SC
+    WHERE C.id = SC.categoryId
+    AND SC.songId = ?
+  `;
+  const checkLiked = `
+    SELECT userId FROM like_song
+    WHERE userId = ?
+    AND songId = ?
+  `;
+  const [result, categories] = await Promise.all([dbUtil.query(sql, [id]), dbUtil.query(getCateSql, [id])]);
+  const songs = dbUtil.group(result.map(row => ({
+    ...dbUtil.nested(row),
+  })), 'id', 'singer', 'singerId');
+  const songDetail = songs[0];
+  songDetail.categories = [];
+  categories.forEach((data) => {
+    songDetail.categories.push({
+      id: data.id,
+      name: data.name,
+    });
+  });
+  songDetail.liked = false;
+  if (userId) {
+    const checkLikedResult = await dbUtil.query(checkLiked, [userId, id]);
+    if (checkLikedResult.length > 0) {
+      songDetail.liked = true;
+    }
+  }
+  return songs[0];
+};

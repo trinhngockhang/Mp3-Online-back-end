@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import * as controller from './SongController';
-import { throwAsNext, paginationMiddleware } from '../../middleware';
+import { throwAsNext, paginationMiddleware, authMiddleware } from '../../middleware';
 
 const path = '/song';
 const router = Router();
@@ -21,6 +21,8 @@ router.get('/category/:id', paginationMiddleware({
   maxSize: 30,
   defaultSize: 20,
 }), throwAsNext(controller.getSongByCategory));
+// get song detail
+router.get('/detail/:id', authMiddleware, throwAsNext(controller.getSongDetail));
 // get song
 router.get('/:id', throwAsNext(controller.getMp3));
 // registerSubrouter

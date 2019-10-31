@@ -30,6 +30,13 @@ export const getSongByCategory = async (req, res) => {
   res.send(songs);
 };
 
+export const getSongDetail = async (req, res) => {
+  const { id } = req.params;
+  const userId = req.isLogged ? req.userId : null;
+  const song = await dbController.getSongDetail(id, userId);
+  res.send(song);
+};
+
 export const getMp3 = async (req, res) => {
   const { id } = req.params;
   console.log(id);
