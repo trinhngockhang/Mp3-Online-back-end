@@ -19,7 +19,10 @@ export const login = async (req, res) => {
 };
 
 export const signUp = async (req, res) => {
-  const { username, password, name } = req.body;
+  const { username, password, name, rePassword } = req.body;
+  if (password !== rePassword) {
+    res.status(401).send('WRONG_REPASS');
+  }
   const passwordHash = hash(password);
   await dbAccess.signUp({ username, passwordHash, name });
   res.ok();

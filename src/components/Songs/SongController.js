@@ -16,12 +16,14 @@ export const getSlideSong = async (req, res) => {
 };
 
 export const getSongByAlbum = async (req, res) => {
-  const songs = await dbController.getSongByAlbum(req.params.id);
+  const userId = req.isLogged ? req.userId : null;
+  const songs = await dbController.getSongByAlbum(req.params.id, userId);
   res.send(songs);
 };
 
 export const getSongByArtist = async (req, res) => {
-  const songs = await dbController.getSongByArtist(req.params.id);
+  const userId = req.isLogged ? req.userId : null;
+  const songs = await dbController.getSongByArtist(req.params.id, userId);
   res.send(songs);
 };
 

@@ -13,9 +13,9 @@ router.get('/new', throwAsNext(controller.getListNewSong));
 // slide
 router.get('/slide', throwAsNext(controller.getSlideSong));
 // get song by album
-router.get('/album/:id', throwAsNext(controller.getSongByAlbum));
+router.get('/album/:id', authMiddleware, throwAsNext(controller.getSongByAlbum));
 // get song by singer
-router.get('/artist/:id', throwAsNext(controller.getSongByArtist));
+router.get('/artist/:id', authMiddleware, throwAsNext(controller.getSongByArtist));
 // get song by category
 router.get('/category/:id', paginationMiddleware({
   maxSize: 30,
