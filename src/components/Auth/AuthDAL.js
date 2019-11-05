@@ -23,3 +23,35 @@ export const checkUserExist = async (username) => {
   }
   return false;
 };
+
+export const getUserFb = async (id) => {
+  const sql = 'SELECT * FROM users WHERE fbId = ?';
+  const result = await dbUtil.queryOne(sql, [id]);
+  return result;
+};
+
+export const getUserGg = async (id) => {
+  const sql = 'SELECT * FROM users WHERE email = ?';
+  const result = await dbUtil.queryOne(sql, [id]);
+  return result;
+};
+
+export const createUserFb = async (name, idFb, avatar) => {
+  const id = uuidv4();
+  const sql = `
+    INSERT INTO users(id,name,avatar,fbId)
+    VALUES(?, ?, ?, ?)
+  `;
+  await dbUtil.execute(sql, [id, name, avatar, idFb]);
+  return id;
+};
+
+export const createUserGg = async (name, email, avatar) => {
+  const id = uuidv4();
+  const sql = `
+    INSERT INTO users(id,name,avatar,email)
+    VALUES(?, ?, ?, ?)
+  `;
+  await dbUtil.execute(sql, [id, name, avatar, email]);
+  return id;
+};
