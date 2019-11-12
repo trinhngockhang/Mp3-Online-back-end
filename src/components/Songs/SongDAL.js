@@ -53,9 +53,7 @@ export const getSongByAlbum = async (id, userId) => {
       AND songId IN (?)
     `;
     const listCheck = await dbUtil.query(checkSql, [userId, listId]);
-    console.log('list check', listCheck);
     const listIdLiked = listCheck.map((doc) => doc.songId);
-    console.log('list id like', listIdLiked);
     const lastSongs = songs.map((doc) => {
       if (listIdLiked.includes(doc.id)) return { ...doc, liked: true };
       return { ...doc, liked: false };
@@ -168,4 +166,40 @@ export const getSongDetail = async (id, userId = null) => {
     }
   }
   return songs[0];
+};
+
+export const getSongLikedByUser = async (userId) => {
+  const sql = `SELECT songs.id,image,songs.name as nameSong,singers.name as singer 
+  FROM songs,singers,singer_song,like_song
+  WHERE singers.id = singer_song.singerId
+  AND singer_song.songId = songs.id
+  AND songs.id = like_song.songId
+  AND like_song.userId = ?
+  ORDER BY createdAt DESC`;
+  const result = await dbUtil.query(sql, [userId]);
+  const songs = dbUtil.group(result.map(row => ({
+    ...dbUtil.nested(row),
+  })), 'id', 'singer');
+  return songs.map((song) => {
+    return { ...song, liked: true };
+  });
+};
+
+export const getChart = async () => {
+  const sql = `
+  SELECT songs.id,image,songs.name as nameSong,singers.name as singer,
+  COUNT(like_song.userId) as score
+  FROM songs,singers,singer_song,like_song
+  WHERE singers.id = singer_song.singerId
+  AND singer_song.songId = songs.id
+  AND songs.id = like_song.songId
+  GROUP BY songs.id
+  ORDER BY COUNT(like_song.userId) DESC
+  LIMIT 5;
+  `;
+  const result = await dbUtil.query(sql);
+  const songs = dbUtil.group(result.map(row => ({
+    ...dbUtil.nested(row),
+  })), 'id', 'singer');
+  return songs;
 };

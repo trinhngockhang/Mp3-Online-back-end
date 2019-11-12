@@ -39,6 +39,17 @@ export const getSongDetail = async (req, res) => {
   res.send(song);
 };
 
+export const getSongLikedByUser = async (req, res) => {
+  const userId = req.isLogged ? req.userId : null;
+  const song = await dbController.getSongLikedByUser(userId);
+  res.send(song);
+};
+
+export const getChart = async (req, res) => {
+  const song = await dbController.getChart();
+  res.send(song);
+};
+
 export const getMp3 = async (req, res) => {
   const { id } = req.params;
   console.log(id);

@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import * as controller from './SongController';
-import { throwAsNext, paginationMiddleware, authMiddleware } from '../../middleware';
+import { throwAsNext, paginationMiddleware, authMiddleware, requireLogin } from '../../middleware';
 
 const path = '/song';
 const router = Router();
@@ -21,8 +21,15 @@ router.get('/category/:id', paginationMiddleware({
   maxSize: 30,
   defaultSize: 20,
 }), throwAsNext(controller.getSongByCategory));
+// get song liked by user
+router.get('/like', authMiddleware, requireLogin, paginationMiddleware({
+  maxSize: 30,
+  defaultSize: 20,
+}), throwAsNext(controller.getSongLikedByUser));
 // get song detail
 router.get('/detail/:id', authMiddleware, throwAsNext(controller.getSongDetail));
+// bang xep hang
+router.get('/chart', throwAsNext(controller.getChart));
 // get song
 router.get('/:id', throwAsNext(controller.getMp3));
 // registerSubrouter
