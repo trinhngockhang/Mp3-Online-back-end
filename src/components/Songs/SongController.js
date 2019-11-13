@@ -46,7 +46,8 @@ export const getSongLikedByUser = async (req, res) => {
 };
 
 export const getChart = async (req, res) => {
-  const song = await dbController.getChart();
+  const userId = req.isLogged ? req.userId : null;
+  const song = await dbController.getChart(userId, req.pagination);
   res.send(song);
 };
 

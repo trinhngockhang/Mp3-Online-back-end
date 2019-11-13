@@ -29,7 +29,12 @@ router.get('/like', authMiddleware, requireLogin, paginationMiddleware({
 // get song detail
 router.get('/detail/:id', authMiddleware, throwAsNext(controller.getSongDetail));
 // bang xep hang
-router.get('/chart', throwAsNext(controller.getChart));
+router.get('/chart', authMiddleware,
+  paginationMiddleware({
+    maxSize: 30,
+    defaultSize: 20,
+  }),
+  throwAsNext(controller.getChart));
 // get song
 router.get('/:id', throwAsNext(controller.getMp3));
 // registerSubrouter

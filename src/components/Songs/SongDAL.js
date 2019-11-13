@@ -185,7 +185,7 @@ export const getSongLikedByUser = async (userId) => {
   });
 };
 
-export const getChart = async () => {
+export const getChart = async (userId, { limit, offset }) => {
   const sql = `
   SELECT songs.id,image,songs.name as nameSong,singers.name as singer,
   COUNT(like_song.userId) as score
@@ -195,11 +195,29 @@ export const getChart = async () => {
   AND songs.id = like_song.songId
   GROUP BY songs.id
   ORDER BY COUNT(like_song.userId) DESC
-  LIMIT 5;
+  LIMIT ?
+  OFFSET ?
+  ;
   `;
-  const result = await dbUtil.query(sql);
+  const result = await dbUtil.query(sql, [limit, offset]);
   const songs = dbUtil.group(result.map(row => ({
     ...dbUtil.nested(row),
   })), 'id', 'singer');
+  if (userId) {
+    const listId = songs.map(song => song.id);
+    console.log(listId);
+    const checkSql = `
+      SELECT songId FROM like_song
+      WHERE userId = ?
+      AND songId IN (?)
+    `;
+    const listCheck = await dbUtil.query(checkSql, [userId, listId]);
+    const listIdLiked = listCheck.map((doc) => doc.songId);
+    const lastSongs = songs.map((doc) => {
+      if (listIdLiked.includes(doc.id)) return { ...doc, liked: true };
+      return { ...doc, liked: false };
+    });
+    return lastSongs;
+  }
   return songs;
 };
