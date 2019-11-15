@@ -187,25 +187,38 @@ export const getSongLikedByUser = async (userId) => {
 
 export const getChart = async (userId, { limit, offset }) => {
   const sql = `
-  SELECT songs.id,image,songs.name as nameSong,singers.name as singer,
+  SELECT songs.id,
   COUNT(like_song.userId) as score
-  FROM songs,singers,singer_song,like_song
-  WHERE singers.id = singer_song.singerId
-  AND singer_song.songId = songs.id
-  AND songs.id = like_song.songId
+  FROM songs,like_song
+  WHERE songs.id = like_song.songId
   GROUP BY songs.id
   ORDER BY COUNT(like_song.userId) DESC
   LIMIT ?
   OFFSET ?
-  ;
   `;
-  const result = await dbUtil.query(sql, [limit, offset]);
-  const songs = dbUtil.group(result.map(row => ({
+  const listIdScore = await dbUtil.query(sql, [limit, offset]);
+  const listId = listIdScore.map((data) => data.id);
+  const listSongSql = `
+  SELECT songs.id,image,songs.name as nameSong,
+  singers.name as singer
+  FROM songs,singers,singer_song
+  WHERE singers.id = singer_song.singerId
+  AND singer_song.songId = songs.id
+  AND songs.id IN (?)
+  `;
+  const listSong = await dbUtil.query(listSongSql, [listId]);
+  const tempSong = dbUtil.group(listSong.map(row => ({
     ...dbUtil.nested(row),
   })), 'id', 'singer');
+  const songs = listIdScore.map((data) => {
+    for (let i = 0; i < tempSong.length; i++) {
+      console.log(data.id);
+      console.log(tempSong[i].id);
+      if (data.id === tempSong[i].id) return { ...tempSong[i], score: data.score };
+    }
+    return null;
+  });
   if (userId) {
-    const listId = songs.map(song => song.id);
-    console.log(listId);
     const checkSql = `
       SELECT songId FROM like_song
       WHERE userId = ?
