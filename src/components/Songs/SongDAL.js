@@ -8,13 +8,11 @@ export const getListTopSong = async () => {
 };
 
 export const getListNewSong = async () => {
-  const offset = Math.round(Math.random() * (16 - 10)) + 10;
   const sql = `SELECT songs.id,image,songs.name as nameSong,singers.name as singer FROM songs,singers,singer_song
   WHERE singers.id = singer_song.singerId
   AND singer_song.songId = songs.id
-  ORDER BY createdAt DESC LIMIT 15
-  OFFSET ?`;
-  const result = await dbUtil.query(sql, [offset]);
+  ORDER BY createdAt DESC LIMIT 15`;
+  const result = await dbUtil.query(sql);
   const songs = dbUtil.group(result.map(row => ({
     ...dbUtil.nested(row),
   })), 'id', 'singer');
@@ -26,7 +24,7 @@ export const getSlideSong = async () => {
    WHERE coverImg IS NOT NULL
    AND singers.id = singer_song.singerId
    AND singer_song.songId = songs.id
-   ORDER BY createdAt LIMIT 3`;
+   ORDER BY createdAt LIMIT 4`;
   const result = await dbUtil.query(sql);
   const songs = dbUtil.group(result.map(row => ({
     ...dbUtil.nested(row),
