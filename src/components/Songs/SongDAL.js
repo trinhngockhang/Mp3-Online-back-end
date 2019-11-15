@@ -11,7 +11,7 @@ export const getListNewSong = async () => {
   const sql = `SELECT songs.id,image,songs.name as nameSong,singers.name as singer FROM songs,singers,singer_song
   WHERE singers.id = singer_song.singerId
   AND singer_song.songId = songs.id
-  ORDER BY createdAt DESC LIMIT 15`;
+  ORDER BY createdAt DESC LIMIT 25`;
   const result = await dbUtil.query(sql);
   const songs = dbUtil.group(result.map(row => ({
     ...dbUtil.nested(row),
