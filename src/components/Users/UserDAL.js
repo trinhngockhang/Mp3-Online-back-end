@@ -1,4 +1,5 @@
 import * as dbUtil from '../../util/databaseUtil';
+import uuidv4 from 'uuid/v4';
 
 export const getMe = async (id) => {
   const sql = 'SELECT id,name,avatar from users WHERE id = ?';
@@ -24,6 +25,15 @@ export const likeSong = async (userId, songId) => {
     await dbUtil.rollbackTransaction(transaction);
     return Promise.reject(e);
   }
+};
+
+export const commentSong = async (userId, songId, content) => {
+  const sql = `
+    INSERT INTO comments(id, userId, songId, content)
+    VALUES (?,?,?,?)
+  `;
+  const id = uuidv4();
+  await dbUtil.execute(sql, [id, userId, songId, content]);
 };
 
 export const unlikeSong = async (userId, songId) => {

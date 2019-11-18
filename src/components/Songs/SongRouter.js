@@ -21,6 +21,11 @@ router.get('/category/:id', paginationMiddleware({
   maxSize: 30,
   defaultSize: 20,
 }), throwAsNext(controller.getSongByCategory));
+// get song comment
+router.get('/comment/:id', authMiddleware, paginationMiddleware({
+  maxSize: 30,
+  defaultSize: 20,
+}), throwAsNext(controller.getCommentById));
 // get song liked by user
 router.get('/like', authMiddleware, requireLogin, paginationMiddleware({
   maxSize: 30,

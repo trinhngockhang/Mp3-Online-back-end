@@ -27,6 +27,12 @@ export const getSongByArtist = async (req, res) => {
   res.send(songs);
 };
 
+export const getCommentById = async (req, res) => {
+  const userId = req.isLogged ? req.userId : null;
+  const comments = await dbController.getCommentById(req.params.id, userId, req.pagination);
+  res.send(comments);
+};
+
 export const getSongByCategory = async (req, res) => {
   const songs = await dbController.getSongByCategory(req.params.id, req.pagination);
   res.send(songs);

@@ -10,6 +10,8 @@ const router = Router();
 router.get('/me', authMiddleware, requireLogin, throwAsNext(controller.getMe));
 // like song
 router.post('/like', authMiddleware, requireLogin, throwAsNext(controller.likeSong));
+// comment song
+router.post('/comment/:id', authMiddleware, requireLogin, throwAsNext(controller.commentSong));
 // unlike song
 router.post('/unlike', authMiddleware, requireLogin, throwAsNext(controller.unlikeSong));
 // registerSubrouter

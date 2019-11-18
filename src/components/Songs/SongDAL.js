@@ -32,6 +32,21 @@ export const getSlideSong = async () => {
   return songs;
 };
 
+export const getCommentById = async (songId, userId, { limit, offset }) => {
+  const sql = `
+    SELECT U.name,U.id,U.avatar,C.content,C.createdAt
+    FROM users U, comments C
+    WHERE U.id = C.userId
+    AND C.songId = ?
+    ORDER BY createdAt DESC
+    LIMIT ? 
+    OFFSET ?
+    
+  `;
+  const comments = await dbUtil.query(sql, [songId, limit, offset]);
+  return comments;
+};
+
 export const getSongByAlbum = async (id, userId) => {
   const sql = `SELECT songs.id,image,songs.name as nameSong,singers.name as singer FROM songs,singers,singer_song
   WHERE singers.id = singer_song.singerId
