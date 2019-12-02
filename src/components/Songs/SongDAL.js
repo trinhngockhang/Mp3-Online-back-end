@@ -34,7 +34,7 @@ export const getSlideSong = async () => {
 
 export const getCommentById = async (songId, userId, { limit, offset }) => {
   const sql = `
-    SELECT COUNT(C.id) OVER() AS count, C.id, U.name,U.id as UserId,U.avatar,C.content,C.createdAt
+    SELECT C.id, U.name,U.id as UserId,U.avatar,C.content,C.createdAt
     FROM users U, comments C
     WHERE U.id = C.userId
     AND C.songId = ?
@@ -43,7 +43,15 @@ export const getCommentById = async (songId, userId, { limit, offset }) => {
     OFFSET ?
     
   `;
-  const [comments, count] = await dbUtil.queryAndCount(sql, [songId, limit, offset]);
+  const sqlCount = `
+    SELECT COUNT(*) as count
+    FROM users U, comments C
+    WHERE U.id = C.userId
+    AND C.songId = ?
+  `;
+  const result = await dbUtil.query(sqlCount, [songId]);
+  const { count } = result[0];
+  const comments = await dbUtil.query(sql, [songId, limit, offset]);
   if (count === 0) return { comments: [], count };
   return { comments, count };
 };
