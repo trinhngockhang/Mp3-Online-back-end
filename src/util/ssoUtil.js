@@ -14,7 +14,7 @@ export const exchangeData = async (token) => {
     const body = JSON.stringify({ authToken: token });
     const contentLength = body.length;
     const options = {
-      baseUrl: 'http://52.187.21.233:3001',
+      baseUrl: 'https://sso.kmp3.ga/',
       headers: {
         'Content-Length': contentLength,
         authorization: `SuperId ${tokenVerified}`,
