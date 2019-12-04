@@ -4,6 +4,7 @@ import { ERRORS } from '../../constant';
 import { hash } from '../../util/bcryptUtil';
 import * as fbUtil from '../../util/fbUtil';
 import * as ggUtil from '../../util/googleUtil';
+import { exchangeData } from '../../util/ssoUtil';
 
 export const login = async (req, res) => {
   const { username, password } = req.body;
@@ -18,6 +19,22 @@ export const login = async (req, res) => {
     return Promise.reject(ERRORS.INVALID_PASSWORD_ERROR);
   }
   return Promise.reject(ERRORS.USER_NOTFOUND_ERROR);
+};
+
+export const loginSso = async (req, res) => {
+  const userSso = await exchangeData(req.body.token);
+  console.log(userSso);
+  const id = await dbAccess.checkUserExistBySsoId(userSso.id);
+  if (id) {
+    const token = await common.generateToken(id);
+    console.log(token);
+    res.send(token);
+  } else {
+    console.log('chua ton tai sso');
+    const userId = await dbAccess.createSsoUser(userSso);
+    const token = await common.generateToken(userId.id);
+    res.send(token);
+  }
 };
 
 export const loginFb = async (req, res) => {

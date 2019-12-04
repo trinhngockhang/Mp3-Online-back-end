@@ -15,6 +15,15 @@ export const signUp = async ({ username, passwordHash, name }) => {
   await dbUtil.query(sql, [id, username, passwordHash, name]);
 };
 
+export const checkUserExistBySsoId = async (id) => {
+  const sql = 'SELECT username, id FROM users WHERE ssoId = ?';
+  const result = await dbUtil.query(sql, [id]);
+  if (result.length > 0) {
+    return result[0].id;
+  }
+  return false;
+};
+
 export const checkUserExist = async (username) => {
   const sql = 'SELECT username FROM users WHERE username = ?';
   const result = await dbUtil.query(sql, [username]);
@@ -54,4 +63,15 @@ export const createUserGg = async (name, email, avatar) => {
   `;
   await dbUtil.execute(sql, [id, name, avatar, email]);
   return id;
+};
+
+export const createSsoUser = async ({ name, id }) => {
+  console.log('tao user sso');
+  const userId = uuidv4();
+  const sql = `
+    INSERT INTO users(id,name,ssoId)
+    VALUES(?, ?, ?)
+  `;
+  await dbUtil.execute(sql, [userId, name, id]);
+  return userId;
 };

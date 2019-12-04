@@ -17,6 +17,8 @@ router.post('/login-fb', throwAsNext(controller.loginFb));
 router.post('/login-gg', throwAsNext(controller.loginGg));
 // --- Sign up ---
 router.post('/signUp', throwAsNext(controller.signUp));
+// --- Log in by SSO---
+router.post('/login-sso', throwAsNext(controller.loginSso));
 // registerSubrouter
 
 // export
