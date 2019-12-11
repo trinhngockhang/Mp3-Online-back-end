@@ -1,7 +1,13 @@
-import { SECURITY } from '../constant';
+import { SECURITY, EXPIRE_IN } from '../constant';
 import rs from 'jsrsasign';
 import * as timestamp from 'unix-timestamp';
 import * as CryptoJS from 'crypto-js';
+
+export const makeAuthorizationHeader = (config, requestBody) => {
+  const jwtToken = createToken(EXPIRE_IN, {}, config.privateKey);
+  const extension = createSuperIdExt(requestBody, config.appSecret);
+  return `SuperId ${jwtToken}.${extension}`;
+};
 
 export const createToken = (expiresIn, payload, prvKeyHex) => {
   const now = timestamp.now();
@@ -111,4 +117,10 @@ export const verifySuperIdExt = (body, ext, clientAccessSecret) => {
   const bodyStr = JSON.stringify(body);
   const hmacBuffer = CryptoJS.HmacSHA256(bodyStr, clientAccessSecret);
   return ext === CryptoJS.enc.Base64.stringify(hmacBuffer);
+};
+
+const createSuperIdExt = (body, clientAccessSecret) => {
+  const bodyStr = JSON.stringify(body);
+  const hmacBuffer = CryptoJS.HmacSHA256(bodyStr, clientAccessSecret);
+  return CryptoJS.enc.Base64.stringify(hmacBuffer);
 };
