@@ -32,7 +32,7 @@ export const getSlideSong = async () => {
   return songs;
 };
 
-export const getCommentById = async (songId, userId, {limit, offset }) => {
+export const getCommentById = async (songId, userId, { limit, offset }) => {
   const sql = `
     SELECT C.id, U.name,U.id as UserId,U.avatar,C.content,C.createdAt
     FROM users U, comments C
