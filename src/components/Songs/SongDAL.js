@@ -8,7 +8,7 @@ export const getListTopSong = async () => {
 };
 
 export const getListNewSong = async () => {
-  const sql = `SELECT songs.id,image,songs.name as nameSong,singers.name as singer FROM songs,singers,singer_song
+  const sql = `SELECT songs.id,image,songs.name as nameSong,singers.name as singer FROM songs,artist as singers,singer_song
   WHERE singers.id = singer_song.singerId
   AND singer_song.songId = songs.id
   ORDER BY createdAt DESC LIMIT 25`;
@@ -20,7 +20,7 @@ export const getListNewSong = async () => {
 };
 
 export const getSlideSong = async () => {
-  const sql = `SELECT songs.id,coverImg,image,songs.name as nameSong,singers.name as singer FROM songs,singers,singer_song
+  const sql = `SELECT songs.id,coverImg,image,songs.name as nameSong,singers.name as singer FROM songs,artist as singers,singer_song
    WHERE coverImg IS NOT NULL
    AND singers.id = singer_song.singerId
    AND singer_song.songId = songs.id
@@ -57,7 +57,7 @@ export const getCommentById = async (songId, userId, { limit, offset }) => {
 };
 
 export const getSongByAlbum = async (id, userId) => {
-  const sql = `SELECT songs.id,image,songs.name as nameSong,singers.name as singer FROM songs,singers,singer_song
+  const sql = `SELECT songs.id,image,songs.name as nameSong,singers.name as singer FROM songs,artist as singers,singer_song
   WHERE singers.id = singer_song.singerId
   AND singer_song.songId = songs.id
   AND albumId = ?
@@ -94,7 +94,7 @@ export const getMp3 = async (id) => {
 
 export const getSongByArtist = async (id, userId) => {
   const sql = `SELECT songs.id,image,songs.name as nameSong,
-  singers.name as singer, singers.id as singerId FROM songs,singers,singer_song
+  singers.name as singer, singers.id as singerId FROM songs,artist as singers,singer_song
   WHERE singers.id = singer_song.singerId
   AND singer_song.songId = songs.id
   AND songs.id = ANY (
@@ -132,7 +132,7 @@ export const getSongByCategory = async (id, { limit, offset }) => {
   const sql = `SELECT S.id,C.name as categoryName,
   S.image,S.name as nameSong,
   singers.name as singer 
-  FROM songs S,singers,singer_song,categories C,song_categories SC
+  FROM songs S,artist as singers,singer_song,categories C,song_categories SC
   WHERE singers.id = singer_song.singerId
   AND singer_song.songId = S.id
   AND C.id = SC.categoryId
@@ -149,11 +149,12 @@ export const getSongByCategory = async (id, { limit, offset }) => {
 };
 
 export const getSongDetail = async (id, userId = null) => {
-  const sql = `SELECT S.id, singers.id as singerId,S.writer,liked as likeNumber,
+  const sql = `SELECT S.id, singers.id as singerId,W.name as writer,liked as likeNumber,
     S.image,S.name as nameSong,
     singers.name as singer 
-    FROM songs S,singers,singer_song
+    FROM songs S,artist as singers,singer_song, artist W
     WHERE S.id = ?
+    AND W.id = S.writer
     AND singers.id = singer_song.singerId
     AND singer_song.songId = S.id
   `;
@@ -192,7 +193,7 @@ export const getSongDetail = async (id, userId = null) => {
 
 export const getSongLikedByUser = async (userId) => {
   const sql = `SELECT songs.id,image,songs.name as nameSong,singers.name as singer 
-  FROM songs,singers,singer_song,like_song
+  FROM songs,artist as singers,singer_song,like_song
   WHERE singers.id = singer_song.singerId
   AND singer_song.songId = songs.id
   AND songs.id = like_song.songId
@@ -223,7 +224,7 @@ export const getChart = async (userId, { limit, offset }) => {
   const listSongSql = `
   SELECT songs.id,image,songs.name as nameSong,
   singers.name as singer
-  FROM songs,singers,singer_song
+  FROM songs,artist as singers,singer_song
   WHERE singers.id = singer_song.singerId
   AND singer_song.songId = songs.id
   AND songs.id IN (?)

@@ -1,15 +1,14 @@
 import * as dbUtil from '../../util/databaseUtil';
 
 export const getSuggestArtist = async () => {
-  const offset = Math.round(Math.random() * 9 - 0);
-  const sql = `SELECT * FROM singers
+  const sql = `SELECT * FROM artist
   LIMIT 6 OFFSET ?`;
-  const result = await dbUtil.query(sql, [offset]);
+  const result = await dbUtil.query(sql, [0]);
   return result;
 };
 
 export const getArtistDetail = async (id) => {
-  const sql = 'SELECT * FROM singers WHERE id = ?';
+  const sql = 'SELECT * FROM artist WHERE id = ?';
   const artist = await dbUtil.queryOne(sql, [id]);
   return artist;
 };

@@ -5,11 +5,12 @@ import routers from './components/router';
 import bodyParser from 'body-parser';
 import morgan from 'morgan';
 import { errorHandler, ok, corsMiddleware } from './middleware';
-
+import path from 'path';
 // Log
 import { logger } from './util/logUtil';
 
 const expressApp = express();
+expressApp.use('/static', express.static(path.join(__dirname, '../MP3')));
 
 // middleware
 expressApp.use(morgan('combined', {
